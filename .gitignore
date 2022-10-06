@@ -6,3 +6,4 @@ unit_3.9_sponge_log.xml
 system_3.8_sponge_log.xml
 *.pyc
 .coverage
+.nox
