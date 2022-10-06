@@ -2,7 +2,7 @@ name: "Run systests on emulator"
 on:
   pull_request:
     branches:
-      - [main, master]
+      - master
 
 jobs:
 
