@@ -1,6 +1,8 @@
 on:
   pull_request:
-    branches: [main, master]
+    branches:
+      - master
+
 name: lint
 jobs:
   lint:
