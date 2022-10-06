@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
+
 import os
 import pathlib
 
@@ -23,8 +24,10 @@ UNIT_TEST_DEPENDENCIES = [
 
 SYSTEM_TEST_PYTHON_VERSIONS = ["3.8"]
 SYSTEM_TEST_DEPENDENCIES = [
+    "colorama",
     "mock",
     "pytest",
+    "requests",
 ]
 
 CURRENT_DIRECTORY = pathlib.Path(__file__).parent.absolute()
@@ -131,9 +134,12 @@ def system(session):
 
     # Run py.test against the system tests.
     if system_test_folder_exists:
+        if session.posargs:
+            os.environ["GH_TOKEN"] = session.posargs[0]
         session.run(
             "py.test",
-            "--quiet",
+            # "--quiet",
+            "-vv",
             f"--junitxml=system_{session.python}_sponge_log.xml",
             system_test_folder_path,
             *session.posargs,

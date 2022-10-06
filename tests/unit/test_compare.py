@@ -1,9 +1,8 @@
 import json
 import os
-
-import mock
 import uuid
 
+import mock
 from requests import Response
 
 TEST_ACCOUNT = str(uuid.uuid4())

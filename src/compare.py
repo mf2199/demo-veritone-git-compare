@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 import logging
+import os
 import sys
 from pathlib import Path
 
 import colorama
-import json
-import os
 import requests
 
 file = Path(__file__).resolve()
@@ -22,7 +22,7 @@ CREDENTIALS_FILE = os.path.join(
     os.path.abspath(os.getcwd()), "src", "credentials.json"
 )
 
-
+# Setting up the logger
 sh = logging.StreamHandler(sys.stdout)
 sh.setFormatter(CustomFormatter())
 logging.getLogger().addHandler(sh)
@@ -85,17 +85,55 @@ def compare(repo_name, base, head, owner=None, debugging=False):
     response = requests.get(url=url, headers=headers)
 
     color = TxtColors.http_response_color(response.status_code)
-    print(
-        color, f"Response status: {response.status_code}", TxtColors.NORMAL
-    )
+    print(color, f"Response status: {response.status_code}", TxtColors.NORMAL)
     logger.info(f"Response status: {response.status_code}")
 
-    if debugging or 200 > response.status_code >= 300:
+    if debugging:
         msg = response.json()
         print(msg)
         logger.info(msg)
+    elif 200 > response.status_code >= 600:
+        msg = response.json()
+        print(msg)
+        logger.critical(msg)
+    elif 400 <= response.status_code < 500:
+        msg = response.json()
+        print(msg)
+        logger.error(msg)
+    elif 300 <= response.status_code < 400:
+        msg = response.json()
+        print(msg)
+        logger.warning(msg)
 
     return response
+
+
+def _save_to_file(content, file_path=None, base=None, head=None, indent=4):
+    # Setting the file extension: either `json` if the `content` is
+    # JSON-serializable, otherwise - `txt`
+    try:
+        content = json.dumps(content, indent=indent)
+        ext = "json"
+    except TypeError:
+        ext = "txt"
+
+    suffix = f"_{base[:6]}...{head[:6]}" if base and head else ""
+
+    file_path = file_path or os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        os.pardir,
+        "data",
+        f"diff{suffix}.{ext}",
+    )
+
+    # Checking whether the target folder exists and creating one if necessary
+    if not os.path.exists(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
+
+    # Writing the contents to file
+    with open(file_path, "w") as f:
+        f.write(content)
+        f.close()
 
 
 if __name__ == "__main__":  # pragma: no cover (covered by the system tests)
@@ -148,6 +186,9 @@ if __name__ == "__main__":  # pragma: no cover (covered by the system tests)
     debug = args.debug
     # endregion
 
-    result = compare(repo, sha_base, sha_head, account, debug).json()
+    result = compare(repo, sha_base, sha_head, account, debug)
+
     if debug:
         print(json.dumps(result, indent=4))
+
+    _save_to_file(result.json(), None, sha_base, sha_head)
