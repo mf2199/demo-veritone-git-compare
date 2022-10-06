@@ -18,8 +18,7 @@ jobs:
       with:
         python-version: '3.9'
 
-    - name: Install / run Nox
+    - name: Install / run tests via Nox
       run: |
-        python -m pip install --upgrade setuptools pip
         python -m pip install nox
         nox -s system

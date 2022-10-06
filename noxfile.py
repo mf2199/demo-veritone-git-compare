@@ -115,31 +115,21 @@ def unit(session):
 @nox.session(python=SYSTEM_TEST_PYTHON_VERSIONS)
 def system(session):
     """Run the system test suite."""
-    system_test_path = os.path.join("tests", "system.py")
     system_test_folder_path = os.path.join("tests", "system")
 
     # Check the value of `RUN_SYSTEM_TESTS` env var. It defaults to true.
     if os.environ.get("RUN_SYSTEM_TESTS", "true") == "false":
         session.skip("RUN_SYSTEM_TESTS is set to false, skipping")
 
-    system_test_exists = os.path.exists(system_test_path)
     system_test_folder_exists = os.path.exists(system_test_folder_path)
 
     # Sanity check: only run tests if found.
-    if not system_test_exists and not system_test_folder_exists:
+    if not system_test_folder_exists:
         session.skip("System tests were not found")
 
     session.install(*SYSTEM_TEST_DEPENDENCIES)
 
     # Run py.test against the system tests.
-    if system_test_exists:
-        session.run(
-            "py.test",
-            "--quiet",
-            f"--junitxml=system_{session.python}_sponge_log.xml",
-            system_test_path,
-            *session.posargs,
-        )
     if system_test_folder_exists:
         session.run(
             "py.test",
