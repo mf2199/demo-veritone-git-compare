@@ -104,6 +104,18 @@ def test__get_token_from_file():
     assert compare._get_token() == expected
 
 
+@mock.patch.dict(
+    "os.environ",
+    {
+        "GH_TOKEN": "",
+        "CREDENTIALS_FILE": os.path.join(
+            os.pardir,
+            "tests",
+            "fixtures",
+            "test_credentials.json",
+        ),
+    },
+)
 @mock.patch("src.compare.requests")
 def test_compare(mock_requests, caplog):
     from src import compare
