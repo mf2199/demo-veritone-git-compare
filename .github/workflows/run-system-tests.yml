@@ -1,12 +1,11 @@
-name: "Run systests on emulator"
 on:
   pull_request:
     branches:
       - master
 
+name: "System Tests"
 jobs:
-
-  run-system-tests:
+  system-tests:
     runs-on: ubuntu-latest
 
     steps:
