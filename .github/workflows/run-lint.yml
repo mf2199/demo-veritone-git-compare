@@ -19,6 +19,3 @@ jobs:
     - name: Run lint
       run: |
         nox -s lint
-    - name: Run lint_setup_py
-      run: |
-        nox -s lint_setup_py
