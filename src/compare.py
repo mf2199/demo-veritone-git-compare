@@ -54,7 +54,7 @@ def _get_token():
     return token
 
 
-def compare(repo_name, base, head, owner=None, debugging=False):
+def compare(repo_name, base, head, owner=None, token=None, debugging=False):
     """Compares two commits using GitHub API.
 
     :type repo_name: str
@@ -66,8 +66,11 @@ def compare(repo_name, base, head, owner=None, debugging=False):
     :type head: str
     :param head: SHA code of the commit in question.
 
-    :type owner: str
+    :type owner: str or None
     :param owner: [Optional] The repository owner.
+
+    :type token: str or None
+    :param token: [Optional] The GitHub secret access token.
 
     :type debugging: bool
     :param debugging: [Optional] Enables additional logging.
@@ -79,7 +82,7 @@ def compare(repo_name, base, head, owner=None, debugging=False):
     base_url = "https://api.github.com/repos"
     url = f"{base_url}/{owner}/{repo_name}/compare/{base}...{head}"
     headers = {
-        "Authorization": "Bearer " + _get_token(),
+        "Authorization": f"Bearer {token or _get_token()}",
         "Accept": "application/vnd.github+json",
     }
     response = requests.get(url=url, headers=headers)

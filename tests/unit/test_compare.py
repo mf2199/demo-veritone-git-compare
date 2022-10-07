@@ -156,7 +156,7 @@ def test_compare(mock_requests, test_code, caplog, capfd):
     mock_response.json = mock.MagicMock(return_value={})
     mock_requests.get.return_value = mock_response
     result = compare.compare(
-        TEST_REPO, TEST_SHA_BASE, TEST_SHA_HEAD, TEST_ACCOUNT, True
+        TEST_REPO, TEST_SHA_BASE, TEST_SHA_HEAD, TEST_ACCOUNT, None, True
     )
     out, err = capfd.readouterr()
     assert result.status_code == test_code
