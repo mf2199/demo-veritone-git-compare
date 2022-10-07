@@ -1,6 +1,14 @@
+*.pyc
+
+.coverage
 .idea
-__pycache__
+.nox
+
+data
+src/credentials.json
+
 system_3.8_sponge_log.xml
 unit_3.7_sponge_log.xml
 unit_3.8_sponge_log.xml
 unit_3.9_sponge_log.xml
+unit_3.10_sponge_log.xml
