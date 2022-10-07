@@ -121,6 +121,8 @@ def test__save_to_file(mock_mkdir, mock_open, test_content, ext):
         f"diff.{ext}",
     )
 
+    expected_calls = [mock.call(mock.ANY), mock.call("")]
+
     compare.save_to_file(test_content)
 
     mock_open.assert_called_once_with(expected_file_path, "w")
@@ -129,7 +131,7 @@ def test__save_to_file(mock_mkdir, mock_open, test_content, ext):
 
     compare.save_to_file(test_content, file_path=mock_path)
 
-    mock_mkdir.assert_called_once_with("")
+    mock_mkdir.assert_has_calls(expected_calls)
 
 
 @pytest.mark.parametrize("test_code", [100, 200, 300, 400, 500, 600])
