@@ -21,10 +21,7 @@ jobs:
         python-version: '3.9'
 
     - name: Install / run tests via Nox
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo "GITHUB_TOKEN: $GH_TOKEN"
         python -m pip install -U pip
         python -m pip install nox
         nox -s system
