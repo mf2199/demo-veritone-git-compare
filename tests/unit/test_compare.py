@@ -3,6 +3,7 @@ import os
 import uuid
 
 import mock
+import pytest
 from requests import Response
 
 TEST_ACCOUNT = str(uuid.uuid4())
@@ -100,6 +101,38 @@ def test__get_token_from_file():
     assert compare._get_token() == expected
 
 
+@pytest.mark.parametrize("test_content,ext", [(object, "txt"), (None, "json")])
+@mock.patch("builtins.open", new_callable=mock.mock_open)
+@mock.patch("os.mkdir")
+def test__save_to_file(mock_mkdir, mock_open, test_content, ext):
+    from src import compare
+
+    expected_file_path = os.path.join(
+        os.path.abspath(
+            os.path.join(
+                os.path.dirname(os.path.realpath(__file__)),
+                os.pardir,
+                os.pardir,
+            )
+        ),
+        "src",
+        os.pardir,
+        "data",
+        f"diff.{ext}",
+    )
+
+    compare.save_to_file(test_content)
+
+    mock_open.assert_called_once_with(expected_file_path, "w")
+
+    mock_path = str(uuid.uuid4())
+
+    compare.save_to_file(test_content, file_path=mock_path)
+
+    mock_mkdir.assert_called_once_with("")
+
+
+@pytest.mark.parametrize("test_code", [100, 200, 300, 400, 500, 600])
 @mock.patch.dict(
     "os.environ",
     {
@@ -113,16 +146,18 @@ def test__get_token_from_file():
     },
 )
 @mock.patch("src.compare.requests")
-def test_compare(mock_requests, caplog):
+def test_compare(mock_requests, test_code, caplog, capfd):
     from src import compare
 
     mock_response = Response()
-    mock_response.status_code = 200
+    mock_response.status_code = test_code
     mock_response.json = mock.MagicMock(return_value={})
     mock_requests.get.return_value = mock_response
     result = compare.compare(
         TEST_REPO, TEST_SHA_BASE, TEST_SHA_HEAD, TEST_ACCOUNT, True
     )
-    assert result.status_code == 200
+    out, err = capfd.readouterr()
+    assert result.status_code == test_code
     mock_requests.get.assert_called_once_with(url=mock.ANY, headers=mock.ANY)
     assert str(mock_response.status_code) in caplog.text
+    assert str(test_code) in out

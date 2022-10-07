@@ -92,10 +92,15 @@ def compare(repo_name, base, head, owner=None, debugging=False):
         msg = response.json()
         print(msg)
         logger.info(msg)
-    elif 200 > response.status_code >= 600:
+
+    if 200 > response.status_code >= 600:
         msg = response.json()
         print(msg)
         logger.critical(msg)
+    elif 500 <= response.status_code < 600:
+        msg = response.json()
+        print(msg)
+        logger.error(msg)
     elif 400 <= response.status_code < 500:
         msg = response.json()
         print(msg)
@@ -108,7 +113,7 @@ def compare(repo_name, base, head, owner=None, debugging=False):
     return response
 
 
-def _save_to_file(content, file_path=None, base=None, head=None, indent=4):
+def save_to_file(content, file_path=None, base=None, head=None, indent=4):
     # Setting the file extension: either `json` if the `content` is
     # JSON-serializable, otherwise - `txt`
     try:
@@ -191,4 +196,4 @@ if __name__ == "__main__":  # pragma: no cover (covered by the system tests)
     if debug:
         print(json.dumps(result, indent=4))
 
-    _save_to_file(result.json(), None, sha_base, sha_head)
+    save_to_file(result.json(), None, sha_base, sha_head)
