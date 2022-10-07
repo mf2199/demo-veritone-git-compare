@@ -72,4 +72,3 @@ accepting submissions. The pipeline runs a series of unit and system tests along
 with code format and style checks according to the published `PEP8 guidelines`_.
 
 .. _`PEP8 guidelines`: https://peps.python.org/pep-0008/
-
